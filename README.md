@@ -1,5 +1,4 @@
-# Project Title
-
+# Url Slug
 Url creator from generated slug
 
 ## Description
