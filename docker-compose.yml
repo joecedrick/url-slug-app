@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:15
+    container_name: fastapi-db
+    restart: always
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker -entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+
+  server:
+    build: ./backend
+    container_name: backend-app
+    command: uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql+asyncpg://myuser:mypassword@db:5432/mydatabase
+
+  frontend:
+      build: ./frontend
+      container_name: frontend-app
+      ports:
+        - '3000:3000'
+
+volumes:
+  postgres_data:
